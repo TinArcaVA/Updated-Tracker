@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <meta name="theme-color" content="#1a1a2e" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="BudgetPH" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"/>
+  <meta name="theme-color" content="#0f0f1a"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="BudgetPH"/>
   <title>BudgetPH – Family Finance Tracker</title>
-  <link rel="manifest" href="manifest.json" />
+  <link rel="manifest" href="manifest.json"/>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
 
@@ -35,27 +35,36 @@
       <span class="logo-text">BudgetPH</span>
     </div>
     <div class="topbar-right">
-      <button class="icon-btn" id="notifBtn" title="Reminders">🔔</button>
-      <button class="icon-btn danger" id="clearBtn" title="Clear All Data">🗑️</button>
+      <!-- Month Picker -->
+      <div class="month-nav">
+        <button class="mnav-btn" onclick="shiftMonth(-1)">‹</button>
+        <span id="activeMonthLabel" class="mnav-label">May 2025</span>
+        <button class="mnav-btn" onclick="shiftMonth(1)">›</button>
+      </div>
+      <button class="icon-btn" id="notifBtn">🔔</button>
+      <button class="icon-btn danger" id="clearBtn">🗑️</button>
     </div>
   </header>
 
-  <!-- MEMBER FILTER BAR -->
+  <!-- MEMBER FILTER -->
   <div class="member-bar">
     <button class="member-pill active" data-member="all">👨‍👩‍👧 All</button>
-    <button class="member-pill tin" data-member="Tin">👩 Tin</button>
+    <button class="member-pill tin"   data-member="Tin">👩 Tin</button>
     <button class="member-pill cesar" data-member="Cesar">👨 Cesar</button>
-    <button class="member-pill kids" data-member="Kids">🧒 Kids</button>
+    <button class="member-pill kids"  data-member="Kids">🧒 Kids</button>
   </div>
 
-  <!-- SUMMARY CARDS -->
+  <!-- CARRYOVER BANNER -->
+  <div id="carryoverBanner" class="carryover-banner hidden"></div>
+
+  <!-- SUMMARY STRIP -->
   <section class="summary-strip">
     <div class="scard income">
       <div class="scard-label">Income</div>
       <div class="scard-val" id="totalIncome">₱0.00</div>
     </div>
     <div class="scard expenses">
-      <div class="scard-label">Expenses</div>
+      <div class="scard-label">Spent</div>
       <div class="scard-val" id="totalExpenses">₱0.00</div>
     </div>
     <div class="scard balance">
@@ -64,16 +73,15 @@
     </div>
   </section>
 
-  <!-- NAV TABS -->
+  <!-- TABS -->
   <nav class="tab-nav">
     <button class="tab active" data-tab="dashboard">📊 Dashboard</button>
     <button class="tab" data-tab="calendar">📅 Calendar</button>
     <button class="tab" data-tab="bills">🧾 Bills</button>
-    <button class="tab" data-tab="transactions">💸 History</button>
+    <button class="tab" data-tab="history">💸 History</button>
     <button class="tab" data-tab="budgets">🎯 Budgets</button>
   </nav>
 
-  <!-- PAGES -->
   <main class="pages">
 
     <!-- DASHBOARD -->
@@ -82,15 +90,15 @@
 
       <div class="section-title mt">Add Income</div>
       <div class="quick-form">
-        <input type="text" id="incDesc" placeholder="Description (e.g. Salary)" />
-        <input type="number" id="incAmount" placeholder="Amount (₱)" min="0" step="0.01" />
-        <input type="date" id="incDate" />
+        <input type="text"   id="incDesc"   placeholder="Description (e.g. Salary)"/>
+        <input type="number" id="incAmount" placeholder="Amount (₱)" min="0" step="0.01"/>
+        <input type="date"   id="incDate"/>
         <div class="member-select-row">
-          <label class="member-select-label">For:</label>
-          <div class="member-toggle-group" id="incMember">
-            <button class="mtog tin active" data-val="Tin">👩 Tin</button>
-            <button class="mtog cesar" data-val="Cesar">👨 Cesar</button>
-            <button class="mtog kids" data-val="Kids">🧒 Kids</button>
+          <label class="msl">For:</label>
+          <div class="mtog-group" id="incMember">
+            <button class="mtog tin   active" data-val="Tin">👩 Tin</button>
+            <button class="mtog cesar"        data-val="Cesar">👨 Cesar</button>
+            <button class="mtog kids"         data-val="Kids">🧒 Kids</button>
           </div>
         </div>
         <button class="btn primary" onclick="addIncome()">+ Add Income</button>
@@ -98,9 +106,9 @@
 
       <div class="section-title mt">Add Expense</div>
       <div class="quick-form">
-        <input type="text" id="expDesc" placeholder="Description (e.g. Groceries)" />
-        <input type="number" id="expAmount" placeholder="Amount (₱)" min="0" step="0.01" />
-        <input type="date" id="expDate" />
+        <input type="text"   id="expDesc"   placeholder="Description (e.g. Groceries)"/>
+        <input type="number" id="expAmount" placeholder="Amount (₱)" min="0" step="0.01"/>
+        <input type="date"   id="expDate"/>
         <select id="expCat">
           <option value="Food">🍔 Food</option>
           <option value="Transport">🚌 Transport</option>
@@ -111,26 +119,26 @@
           <option value="Other">📦 Other</option>
         </select>
         <div class="member-select-row">
-          <label class="member-select-label">For:</label>
-          <div class="member-toggle-group" id="expMember">
-            <button class="mtog tin active" data-val="Tin">👩 Tin</button>
-            <button class="mtog cesar" data-val="Cesar">👨 Cesar</button>
-            <button class="mtog kids" data-val="Kids">🧒 Kids</button>
+          <label class="msl">For:</label>
+          <div class="mtog-group" id="expMember">
+            <button class="mtog tin   active" data-val="Tin">👩 Tin</button>
+            <button class="mtog cesar"        data-val="Cesar">👨 Cesar</button>
+            <button class="mtog kids"         data-val="Kids">🧒 Kids</button>
           </div>
         </div>
         <button class="btn accent" onclick="addExpense()">+ Add Expense</button>
       </div>
 
-      <div class="section-title mt">Recent Transactions</div>
+      <div class="section-title mt">This Month's Transactions</div>
       <div id="breakdown" class="breakdown-list"></div>
     </section>
 
     <!-- CALENDAR -->
     <section class="page" id="page-calendar">
       <div class="calendar-header">
-        <button class="cal-nav" onclick="prevMonth()">&#8592;</button>
+        <button class="cal-nav" onclick="prevCal()">&#8592;</button>
         <span id="calMonthYear"></span>
-        <button class="cal-nav" onclick="nextMonth()">&#8594;</button>
+        <button class="cal-nav" onclick="nextCal()">&#8594;</button>
       </div>
       <div class="calendar-grid" id="calGrid"></div>
       <div id="calDayDetail" class="day-detail hidden"></div>
@@ -140,20 +148,20 @@
     <section class="page" id="page-bills">
       <div class="section-title">Add Bill / Reminder</div>
       <div class="quick-form">
-        <input type="text" id="billDesc" placeholder="Bill name (e.g. Electric Bill)" />
-        <input type="number" id="billAmount" placeholder="Amount (₱)" min="0" step="0.01" />
-        <input type="date" id="billDue" />
+        <input type="text"   id="billDesc"   placeholder="Bill name (e.g. Electric Bill)"/>
+        <input type="number" id="billAmount" placeholder="Amount (₱)" min="0" step="0.01"/>
+        <input type="date"   id="billDue"/>
         <select id="billRecur">
           <option value="none">One-time</option>
           <option value="monthly">Monthly</option>
           <option value="weekly">Weekly</option>
         </select>
         <div class="member-select-row">
-          <label class="member-select-label">For:</label>
-          <div class="member-toggle-group" id="billMember">
-            <button class="mtog tin active" data-val="Tin">👩 Tin</button>
-            <button class="mtog cesar" data-val="Cesar">👨 Cesar</button>
-            <button class="mtog kids" data-val="Kids">🧒 Kids</button>
+          <label class="msl">For:</label>
+          <div class="mtog-group" id="billMember">
+            <button class="mtog tin   active" data-val="Tin">👩 Tin</button>
+            <button class="mtog cesar"        data-val="Cesar">👨 Cesar</button>
+            <button class="mtog kids"         data-val="Kids">🧒 Kids</button>
           </div>
         </div>
         <button class="btn warning" onclick="addBill()">+ Add Bill</button>
@@ -167,15 +175,15 @@
       <div id="paidBills" class="bills-list"></div>
     </section>
 
-    <!-- TRANSACTIONS -->
-    <section class="page" id="page-transactions">
+    <!-- HISTORY -->
+    <section class="page" id="page-history">
       <div class="filter-row">
-        <select id="filterType" onchange="renderTransactions()">
+        <select id="filterType"     onchange="renderHistory()">
           <option value="all">All Types</option>
           <option value="income">Income</option>
           <option value="expense">Expense</option>
         </select>
-        <select id="filterMemberTx" onchange="renderTransactions()">
+        <select id="filterMemberTx" onchange="renderHistory()">
           <option value="all">All Members</option>
           <option value="Tin">👩 Tin</option>
           <option value="Cesar">👨 Cesar</option>
@@ -183,29 +191,39 @@
         </select>
       </div>
       <div class="filter-row">
-        <input type="month" id="filterMonth" onchange="renderTransactions()" style="flex:1" />
+        <input type="month" id="filterMonth" onchange="renderHistory()" style="flex:1"/>
       </div>
-      <div id="transactionList" class="transaction-list"></div>
+      <div id="historyList" class="transaction-list"></div>
     </section>
 
     <!-- BUDGETS -->
     <section class="page" id="page-budgets">
-      <div class="section-title">Set Monthly Budget</div>
+      <div class="section-title">Set Category Budget</div>
       <div class="quick-form">
         <div class="member-select-row">
-          <label class="member-select-label">For:</label>
-          <div class="member-toggle-group" id="budgetMember">
-            <button class="mtog tin active" data-val="Tin">👩 Tin</button>
-            <button class="mtog cesar" data-val="Cesar">👨 Cesar</button>
-            <button class="mtog kids" data-val="Kids">🧒 Kids</button>
+          <label class="msl">For:</label>
+          <div class="mtog-group" id="budgetMember">
+            <button class="mtog tin   active" data-val="Tin">👩 Tin</button>
+            <button class="mtog cesar"        data-val="Cesar">👨 Cesar</button>
+            <button class="mtog kids"         data-val="Kids">🧒 Kids</button>
           </div>
         </div>
-        <input type="number" id="budgetAmount" placeholder="Budget amount (₱)" min="0" step="0.01" />
-        <input type="month" id="budgetMonth" />
+        <select id="budgetCat">
+          <option value="Total">💰 Overall Budget</option>
+          <option value="Food">🍔 Food</option>
+          <option value="Transport">🚌 Transport</option>
+          <option value="Utilities">💡 Utilities</option>
+          <option value="Shopping">🛍️ Shopping</option>
+          <option value="Health">💊 Health</option>
+          <option value="Entertainment">🎮 Entertainment</option>
+          <option value="Other">📦 Other</option>
+        </select>
+        <input type="number" id="budgetAmount" placeholder="Budget amount (₱)" min="0" step="0.01"/>
+        <input type="month"  id="budgetMonth"/>
         <button class="btn primary" onclick="setBudget()">💾 Save Budget</button>
       </div>
 
-      <div class="section-title mt">Budget Overview</div>
+      <div class="section-title mt">Budget Overview <span id="budgetMonthLabel" style="color:var(--green);font-size:11px"></span></div>
       <div id="budgetOverview" class="budget-overview"></div>
     </section>
 
@@ -214,14 +232,25 @@
   <div id="reminderBadge" class="reminder-badge hidden"></div>
 </div>
 
-<!-- CONFIRM MODAL -->
+<!-- EDIT MODAL -->
+<div id="editModal" class="modal-overlay hidden">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span id="editModalTitle">Edit Entry</span>
+      <button onclick="closeEditModal()" class="modal-close">✕</button>
+    </div>
+    <div class="modal-body" id="editModalBody"></div>
+  </div>
+</div>
+
+<!-- CONFIRM CLEAR MODAL -->
 <div id="confirmModal" class="modal-overlay hidden">
   <div class="modal-box">
     <div class="modal-header"><span>⚠️ Confirm Clear</span></div>
-    <p style="padding:0 16px 12px;color:var(--text-muted);font-size:14px">This will permanently delete ALL data including budgets. Are you sure?</p>
+    <p style="padding:0 16px 12px;color:var(--text-muted);font-size:14px">This will permanently delete ALL data. Are you sure?</p>
     <div style="display:flex;gap:12px;padding:0 16px 16px">
       <button class="btn danger full" onclick="confirmClear()">Yes, Clear Everything</button>
-      <button class="btn ghost full" onclick="closeConfirm()">Cancel</button>
+      <button class="btn ghost  full" onclick="closeConfirm()">Cancel</button>
     </div>
   </div>
 </div>
